@@ -4,20 +4,19 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const form = document.getElementById("todo-form");
   const newTodoInput = document.querySelector("input.new-item");
 
-  form.addEventListener("submit", e => {
-    e.preventDefault()
-    const text = newTodoInput.value
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const text = newTodoInput.value;
 
-    fetch('api/todos', {
-      method:'POST',
+    fetch("api/todos", {
+      method: "POST",
       body: JSON.stringify({ text }),
       headers: {
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     })
-    .then(response => response.json())
-    .then(json => console.log(json))
-    .then(err => console.err(err))
-
-  })
+      .then((response) => response.json())
+      .then((json) => console.log(json))
+      .catch((err) => console.error(err));
+  });
 });
