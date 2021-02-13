@@ -1,0 +1,2 @@
+DROP DATABASE IF EXISTS sequelizeToDo;
+CREATE DATABASE sequelizeToDo
