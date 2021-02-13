@@ -14,12 +14,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
   const renderTodoList = (todos) => {
     const todosHTML = todos
       .map((todo) => {
+        const completeClass = todo.complete ? 'line-through' : ""
         return `
         <li class="list-group-item todo-item">
-          <span>${todo.text}</span>
+          <span class ="${completeClass}">${todo.text}</span>
           <input type="text" class="edit" style="display: none;">
           <button data-id="${todo.id}" class="delete btn btn-danger">x</button>
-          <button data-id="${todo.id}" class="complete btn btn-primary">✓</button>
+          <button data-id="${todo.id}" data-complete="${todo.complete}" class="complete btn btn-primary">✓</button>
         </li>`;
       })
       .join(" ");
@@ -27,13 +28,13 @@ document.addEventListener("DOMContentLoaded", (e) => {
     todoListSpan.innerHTML = todosHTML;
   };
 
-  const deleteTodo = id => {
+  const deleteTodo = (id) => {
     fetch(`/api/todos/${id}`, {
-      method: 'DELETE'
+      method: "DELETE",
     })
-    .then(getTodos)
-    .catch(err => console.error(err))
-  }
+      .then(getTodos)
+      .catch((err) => console.error(err));
+  };
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -50,14 +51,35 @@ document.addEventListener("DOMContentLoaded", (e) => {
       .catch((err) => console.error(err));
   });
 
-  todoListSpan.addEventListener('click', e => {
-    const target = e.target
-    const id = target.getAttribute('data-id')
+  const updateTodo = newTodo => {
+    fetch(`/api/todos/${newTodo.id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(newTodo)
 
-    if (target.matches('.delete')){
-      deleteTodo(id)
+    })
+      .then(getTodos)
+      .catch((err) => console.error(err));
+  }
+
+  todoListSpan.addEventListener("click", (e) => {
+    const target = e.target;
+    const id = target.getAttribute("data-id");
+    if (target.matches(".delete")) {
+      deleteTodo(id);
+    } else if (target.matches(".complete")) {
+      const complete = JSON.parse(target.getAttribute("data-complete"));
+
+      const newTodo = {
+        id, 
+        complete: !complete
+      }
+
+      updateTodo(newTodo);
     }
-  })
+  });
 
   getTodos();
 });
